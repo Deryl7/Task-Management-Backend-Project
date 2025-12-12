@@ -1,6 +1,7 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const prisma = require('../utils/client');
-const { registerSchema } = require('../validators/authValidator');
+const { registerSchema, loginSchema } = require('../validators/authValidator');
 
 const register = async (req, res, next) => {
   try {
@@ -65,4 +66,67 @@ const register = async (req, res, next) => {
   }
 };
 
-module.exports = { register };
+const login = async (req, res, next) => {
+  try {
+    // Validasi Input
+    const validation = loginSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validasi gagal',
+        errors: validation.error.errors.map(err => ({
+          field: err.path[0],
+          message: err.message
+        }))
+      });
+    }
+
+    const { email, password } = validation.data;
+
+    // Cari User berdasarkan Email
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    // Validasi User & Password
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Email atau password salah'
+      });
+    }
+
+    // Generate Tokens
+    const payload = {
+      id: user.id,
+      role: user.role
+    };
+
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN // e.g., '15m'
+    });
+
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN // e.g., '7d'
+    });
+
+    // Response Sukses
+    res.status(200).json({
+      success: true,
+      message: 'Login berhasil',
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accessToken,  // Token dikirim ke client
+        refreshToken
+      }
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login };
