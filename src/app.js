@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 
 // 1. Konfigurasi Environment
 dotenv.config();
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
 
 // 4. Error Handling Middleware (Placeholder)
 // Lengkapi nanti sesuai spesifikasi [cite: 186]
