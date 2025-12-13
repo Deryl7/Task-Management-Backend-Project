@@ -5,7 +5,8 @@ const createTaskSchema = z.object({
   description: z.string().optional(),
   status: z.enum(['PENDING', 'IN_PROGRESS', 'DONE']).optional(), // Default PENDING di database
   dueDate: z.string().datetime().optional(), // Format ISO string (YYYY-MM-DDTHH:mm:ssZ)
-  projectId: z.number().int("Project ID harus berupa angka")
+  projectId: z.number().int("Project ID harus berupa angka"),
+  tagIds: z.array(z.number()).optional() // Array angka, opsional
 });
 
 const updateTaskSchema = z.object({

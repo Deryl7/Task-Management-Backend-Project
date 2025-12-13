@@ -14,7 +14,7 @@ const createTask = async (req, res, next) => {
       });
     }
 
-    const { title, description, status, dueDate, projectId } = validation.data;
+    const { title, description, status, dueDate, projectId, tagIds } = validation.data;
     const userId = req.user.id;
 
     // A. Validasi: Pastikan Project ada DAN milik User yang sedang login
@@ -37,8 +37,22 @@ const createTask = async (req, res, next) => {
         description,
         status: status || 'PENDING',
         dueDate: dueDate ? new Date(dueDate) : null, // Konversi string ke Date Object
-        projectId
-      }
+        projectId,
+        // Logika relasi many-to-many
+        tags: {
+            create: tagIds && tagIds.length > 0 ? tagIds.map(tagId => ({
+                tag: { connect: { id: tagId } }
+            })) : []
+        }
+      },
+    //   Include tags di response
+        include: {
+            tags: {
+                include: {
+                    tag: true // Tampilkan data tag lengkap
+                }
+            }
+        }
     });
 
     res.status(201).json({
