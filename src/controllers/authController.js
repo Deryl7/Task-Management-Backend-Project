@@ -160,4 +160,47 @@ const getMe = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getMe };
+const refreshToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    // 1. Validasi keberadaan token
+    if (!refreshToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Refresh Token wajib disertakan'
+      });
+    }
+
+    // 2. Verifikasi Signature Refresh Token
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    // 3. Generate Access Token BARU
+    const payload = {
+      id: decoded.id,
+      role: decoded.role
+    };
+
+    const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN // 15 menit lagi
+    });
+
+    // 4. Kirim token baru
+    res.status(200).json({
+      success: true,
+      message: 'Access Token berhasil diperbarui',
+      data: {
+        accessToken: newAccessToken
+      }
+    });
+
+  } catch (error) {
+    // Jika refresh token expired atau tidak valid
+    return res.status(403).json({
+      success: false,
+      message: 'Refresh Token tidak valid atau kadaluarsa. Silahkan login ulang.'
+    });
+  }
+};
+
+module.exports = { register, login, getMe, refreshToken };
