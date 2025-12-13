@@ -1,7 +1,7 @@
 const prisma = require('../utils/client');
 const { createProjectSchema } = require('../validators/projectValidator');
 
-// 1. CREATE PROJECT
+// CREATE PROJECT
 const createProject = async (req, res, next) => {
   try {
     const validation = createProjectSchema.safeParse(req.body);
@@ -38,7 +38,7 @@ const createProject = async (req, res, next) => {
   }
 };
 
-// 2. GET ALL PROJECTS (With Pagination & Search)
+// GET ALL PROJECTS (With Pagination & Search)
 const getAllProjects = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -91,4 +91,87 @@ const getAllProjects = async (req, res, next) => {
   }
 };
 
-module.exports = { createProject, getAllProjects };
+// UPDATE PROJECT
+const updateProject = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // A. Validasi Input
+    const validation = updateProjectSchema.safeParse(req.body);
+    if (!validation.success) {
+      const errorDetails = (validation.error.errors || []).map(err => ({
+        field: err.path[0],
+        message: err.message
+      }));
+      return res.status(400).json({ success: false, message: 'Validasi gagal', errors: errorDetails });
+    }
+
+    const { title, description } = validation.data;
+
+    // B. Cek Keberadaan Project & Kepemilikan (PENTING!)
+    const project = await prisma.project.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!project) {
+      return res.status(404).json({ success: false, message: 'Project tidak ditemukan' });
+    }
+
+    // Cek apakah yang request adalah pemilik project?
+    if (project.userId !== userId) {
+      return res.status(403).json({ success: false, message: 'Akses ditolak. Anda bukan pemilik project ini.' });
+    }
+
+    // C. Lakukan Update
+    const updatedProject = await prisma.project.update({
+      where: { id: Number(id) },
+      data: {
+        title,       // Jika undefined (tidak dikirim), Prisma tidak akan mengupdatenya
+        description
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Project berhasil diupdate',
+      data: updatedProject
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+// DELETE PROJECT
+const deleteProject = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // A. Cek Keberadaan & Kepemilikan
+    const project = await prisma.project.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!project) {
+      return res.status(404).json({ success: false, message: 'Project tidak ditemukan' });
+    }
+
+    if (project.userId !== userId) {
+      return res.status(403).json({ success: false, message: 'Akses ditolak. Anda bukan pemilik project ini.' });
+    }
+
+    // B. Lakukan Hapus
+    await prisma.project.delete({
+      where: { id: Number(id) }
+    });
+
+    // Return 204 No Content
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createProject, getAllProjects, updateProject, deleteProject };
