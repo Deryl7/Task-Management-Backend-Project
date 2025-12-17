@@ -83,7 +83,7 @@ const getAllProjects = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Daftar project berhasil diambil',
-      data: projects,
+      data: formattedProjects,
       pagination: {
         currentPage: Number(page),
         totalPages,
