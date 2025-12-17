@@ -1,4 +1,5 @@
 const prisma = require('../config/database');
+const { formatDate } = require('../utils/date');
 const { createProjectSchema } = require('../validators/projectValidator');
 
 // CREATE PROJECT
@@ -70,6 +71,11 @@ const getAllProjects = async (req, res, next) => {
       }),
       prisma.project.count({ where: whereClause })
     ]);
+
+    const formattedProjects = projects.map(project => ({
+      ...project,
+      createdAtFormatted: formatDate(project.createdAt) // Gunakan helper formatDate
+    }));
 
     // Hitung total halaman
     const totalPages = Math.ceil(totalRecords / take);
