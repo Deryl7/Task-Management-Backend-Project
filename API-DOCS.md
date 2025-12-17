@@ -5,7 +5,7 @@ Dokumentasi lengkap endpoint untuk Backend Task Management API.
 
 **Base URL:**
 - Local: `http://localhost:3000`
-- Production: `http://13.217.194.136:3000`
+- Production: `http://54.226.237.227:3000`
 
 **Authentication:**
 Semua endpoint (kecuali Register, Login, Refresh) membutuhkan header:

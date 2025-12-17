@@ -1,15 +1,15 @@
 # Deployment Report
 
 ## 🌐 Production URL
-- **Base URL:** http://13.217.194.136:3000
-- **Health Check:** http://13.217.194.136:3000/
+- **Base URL:** http://54.226.237.227:3000
+- **Health Check:** http://54.226.237.227:3000/
 - **API Documentation:** Lihat file API-DOCS.md pada repository.
 
 ## ☁️ AWS EC2 Details
 - **Instance ID:** i-003eb7061a4c0d7e6
 - **Instance Type:** t2.micro
 - **OS:** Ubuntu Server 22.04 LTS
-- **Public IP:** 13.217.194.136
+- **Public IP:** 54.226.237.227
 - **Region:** us-east-1 (AWS Academy Standard)
 
 ## 🔑 Test Credentials
