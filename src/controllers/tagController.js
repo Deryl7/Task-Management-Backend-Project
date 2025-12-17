@@ -1,4 +1,4 @@
-const prisma = require('../utils/client');
+const prisma = require('../config/database');
 const { z } = require('zod');
 
 // Schema validasi simple

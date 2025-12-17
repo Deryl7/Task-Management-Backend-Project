@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { jwtSecret } = require('../config/auth');
 
 const authenticate = (req, res, next) => {
   // 1. Ambil header Authorization
@@ -24,7 +25,7 @@ const authenticate = (req, res, next) => {
 
   try {
     // 3. Verifikasi Token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, jwtSecret);
 
     // 4. Simpan data user ke dalam object Request (req)
     // Agar bisa dipakai di controller selanjutnya

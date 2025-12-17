@@ -1,4 +1,4 @@
-const prisma = require('../utils/client');
+const prisma = require('../config/database');
 const { createTaskSchema, updateTaskSchema } = require('../validators/taskValidator');
 
 // 1. CREATE TASK

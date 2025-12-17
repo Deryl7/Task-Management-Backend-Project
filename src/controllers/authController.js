@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const prisma = require('../utils/client');
+const prisma = require('../config/database'); 
+const { jwtSecret, jwtExpiresIn, jwtRefreshSecret, jwtRefreshExpiresIn } = require('../config/auth');
 const { registerSchema, loginSchema } = require('../validators/authValidator');
 
 const register = async (req, res, next) => {
@@ -102,12 +103,12 @@ const login = async (req, res, next) => {
       role: user.role
     };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN // e.g., '15m'
+    const accessToken = jwt.sign(payload, jwtSecret, {
+      expiresIn: jwtExpiresIn // e.g., '15m'
     });
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN // e.g., '7d'
+    const refreshToken = jwt.sign(payload, jwtRefreshSecret, {
+      expiresIn: jwtRefreshExpiresIn // e.g., '7d'
     });
 
     // Response Sukses
@@ -173,7 +174,7 @@ const refreshToken = async (req, res, next) => {
     }
 
     // 2. Verifikasi Signature Refresh Token
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(refreshToken, jwtRefreshSecret);
 
     // 3. Generate Access Token BARU
     const payload = {
@@ -181,8 +182,8 @@ const refreshToken = async (req, res, next) => {
       role: decoded.role
     };
 
-    const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN // 15 menit lagi
+    const newAccessToken = jwt.sign(payload, jwtSecret, {
+      expiresIn: jwtExpiresIn // 15 menit lagi
     });
 
     // 4. Kirim token baru

@@ -1,4 +1,4 @@
-const prisma = require('../utils/client');
+const prisma = require('../config/database');
 const { createProjectSchema } = require('../validators/projectValidator');
 
 // CREATE PROJECT
