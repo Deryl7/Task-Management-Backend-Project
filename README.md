@@ -23,7 +23,7 @@ Backend REST API untuk aplikasi manajemen tugas. Dibangun menggunakan Node.js, E
 
 1. **Clone Repository**
    ```bash
-   git clone <your-repo-url>
+   git clone [https://github.com/Deryl7/Task-Management-Backend-Project.git](https://github.com/Deryl7/Task-Management-Backend-Project.git)
    cd backend-task-management
    ```
 
