@@ -60,7 +60,3 @@ Import file collection Postman yang tersedia di folder `docs/` (jika ada) atau g
 
 - `POST /api/auth/register` - Register user baru
 - `POST /api/auth/login` - Login user
-
----
-
-*Tugas Project Akhir Backend - Pemrograman Web*
